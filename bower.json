@@ -1,0 +1,19 @@
+{
+  "name": "vtt-jquery-folder",
+  "version": "0.0.0",
+  "homepage": "",
+  "authors": [
+    "libeo <info@libeo.com>"
+  ],
+  "description": "A jQuery folder plugin",
+  "main": "dist/jquery.folder.js",
+  "private": true,
+  "ignore": [
+    "node_modules"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.2",
+    "vtt-jquery-buttonize": "git@github.com:libeo-vtt/jquery-buttonize.git#~1.0.0"
+  },
+  "keywords": "folder, plugin, jquery"
+}

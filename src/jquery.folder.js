@@ -3,7 +3,7 @@
 
 (function($) {
     var Folder = function(element, options) {
-        this.folder = $(element);
+        this.folderGroup = $(element);
 
         this.config = $.extend({
             animation: 'linear',
@@ -35,36 +35,47 @@
             error: 'is-error'
         }, this.config.customGlobalClasses || {});
 
-        // Get the folder trigger and transform the tags in a <button> tag
-        this.folder.find('.' + this.config.folderTriggerClass).buttonize({
+        // Get all the folders
+        this.folders = this.folderGroup.find('.folder');
+
+        // Get all the folders triggers and transform them into <button> tag
+        this.folderGroup.find('.' + this.config.folderTriggerClass).buttonize({
             a11y: this.config.a11y
         });
-        this.folderTrigger = this.folder.find('.' + this.config.folderTriggerClass);
 
-        // Get the folder content
-        this.folderContent = this.folder.find('.' + this.config.folderContentClass);
+        // Get all the folders triggers
+        this.folderTriggers = this.folderGroup.find('.' + this.config.folderTriggerClass);
 
-        // Create and get the aria text
-        this.folderTrigger.append('<span class="aria-text visuallyhidden"></span>');
-        this.folderAria = this.folderTrigger.find('.' + this.config.ariaTextClass);
+        // Get all the folders contents
+        this.folderContents = this.folderGroup.find('.' + this.config.folderContentClass);
+
+        // Create and get the aria text for all folders triggers
+        this.folderTriggers.append('<span class="' + this.config.ariaTextClass + ' visuallyhidden"></span>');
+        this.folderArias = this.folderTriggers.find('.' + this.config.ariaTextClass);
 
         this.init();
     };
 
     $.extend(Folder.prototype, {
-
         // Component initialization
         init: function() {
-            // Bind events
             this.bindEvents();
-
-            if (!this.folder.hasClass(this.config.forceOpenClass)) {
-                this.folderContent.hide();
-                this.changeAriaText(this.config.ariaTextOpen);
-            } else {
-                this.folder.addClass(this.classes.active);
-            }
-
+            // Check if each element has to be open or close
+            this.folders.each($.proxy(function(index, element) {
+                var $element = $(element);
+                // Find elements of current tab
+                currentAriaContainer = $element.find('.' + this.config.ariaTextClass);
+                currentContent = $element.find('.' + this.config.folderContentClass);
+                // If has force open class or not
+                if (!$element.hasClass(this.config.forceOpenClass)) {
+                    currentContent.hide();
+                    this.changeAriaText(currentAriaContainer, this.config.ariaTextOpen);
+                } else {
+                    $element.addClass(this.classes.active);
+                    this.changeAriaText(currentAriaContainer, this.config.ariaTextClose);
+                }
+            }, this));
+            // If first folder has to be open
             if (this.config.openFirstFolder) {
                 this.openFirstFolder();
             }
@@ -72,107 +83,105 @@
 
         // Bind events with actions
         bindEvents: function() {
-            // Click events
-            this.folderTrigger.on('click', $.proxy(function() {
-                // Folder is active
-                if (this.folder.hasClass(this.classes.active)) {
-                    this.closeFolder();
-                }
-                // Folder is not active
-                else {
-                    this.openFolder();
+            // Folder trigger click event (open or close)
+            this.folderTriggers.on('click', $.proxy(function(e) {
+                // If folder is opened or not
+                if ($(e.currentTarget).parent().hasClass(this.classes.active)) {
+                    this.closeFolder($(e.currentTarget));
+                } else {
+                    this.openFolder($(e.currentTarget));
                 }
             }, this));
 
-            // Focus events
-            this.folderTrigger.on('focus', $.proxy(function(e) {
+            // On blur and focuse change aria-live value
+            this.folderTriggers.on('focus', $.proxy(function(e) {
                 this.onTriggerFocus($(e.currentTarget));
             }, this));
-            this.folderTrigger.on('blur', $.proxy(function(e) {
+            this.folderTriggers.on('blur', $.proxy(function(e) {
                 this.onTriggerBlur($(e.currentTarget));
             }, this));
-
-            this.folderTrigger.on('focus', this.config.onFocus);
-            this.folderTrigger.on('blur', this.config.onBlur);
+            // On blur and focuse custom config function call
+            this.folderTriggers.on('focus', this.config.onFocus);
+            this.folderTriggers.on('blur', this.config.onBlur);
         },
 
         // Open the current folder
-        openFolder: function() {
+        openFolder: function(currentTrigger) {
+            // Custom config function call
             this.config.beforeOpen();
+            // Find elements of current tab
+            currentAriaContainer = currentTrigger.find('.' + this.config.ariaTextClass);
+            currentFolder = currentTrigger.parent();
+            currentContent = currentFolder.find('.' + this.config.folderContentClass);
 
             // With animation
             if (this.config.animation !== 'none') {
-                this.folderContent.slideDown(this.config.animationDuration, $.proxy(function() {
+                // If singleopen option set to true close every folders
+                if (this.config.singleOpen == true) {
+                    this.folderContents.slideUp(this.config.animationDuration);
+                    this.folders.removeClass(this.classes.active);
+                    this.changeAriaText(this.folderArias, this.config.ariaTextOpen);
+                }
+                currentContent.slideDown(this.config.animationDuration, $.proxy(function() {
+                    currentFolder.addClass(this.classes.active);
+                    // Custom config function call
                     this.config.afterOpen();
-                    this.folder.addClass(this.classes.active);
-                    this.changeAriaText(this.config.ariaTextClose);
                 }, this));
             }
             // Without animation
             else {
-                this.folderContent.show();
+                // If singleopen option set to true close every folders
+                if (this.config.singleOpen == true) {
+                    this.folderContents.hide();
+                    this.folders.removeClass(this.classes.active)
+                    this.changeAriaText(this.folderArias, this.config.ariaTextOpen);
+                }
+                currentContent.show();
+                currentFolder.addClass(this.classes.active);
+                // Custom config function call
                 this.config.afterOpen();
-                this.folder.addClass(this.classes.active);
-                this.changeAriaText(this.config.ariaTextClose);
             }
-
-            // Check if folder has parent and if parent has singleopen option set to true
-            if (this.isGroup() && this.isSingleOpen()) {
-                this.closeSiblings();
-            }
+            this.changeAriaText(currentAriaContainer, this.config.ariaTextClose);
         },
 
         // Close the current folder
-        closeFolder: function() {
+        closeFolder: function(currentTrigger) {
+            // Custom config function call
             this.config.beforeClose();
+            // Find elements of current tab
+            currentAriaContainer = currentTrigger.find('.' + this.config.ariaTextClass);
+            currentFolder = currentTrigger.parent();
+            currentContent = currentFolder.find('.' + this.config.folderContentClass);
 
             // With animation
             if (this.config.animation !== 'none') {
-                this.folderContent.slideUp(this.config.animationDuration, $.proxy(function() {
+                currentContent.slideUp(this.config.animationDuration, $.proxy(function() {
+                    currentFolder.removeClass(this.classes.active);
+                    // Custom config function call
                     this.config.afterClose();
-                    this.folder.removeClass(this.classes.active);
-                    this.changeAriaText(this.config.ariaTextOpen);
                 }, this));
             }
             // Without animation
             else {
-                this.folderContent.hide();
+                currentContent.hide();
+                currentFolder.removeClass(this.classes.active);
+                // Custom config function call
                 this.config.afterClose();
-                this.folder.removeClass(this.classes.active);
-                this.changeAriaText(this.config.ariaTextOpen);
             }
+            this.changeAriaText(currentAriaContainer, this.config.ariaTextOpen);
         },
 
         // Open first folder
         openFirstFolder: function() {
-            if (this.isGroup()) {
-                var firstFolder = this.folder.parent('.' + this.config.folderGroupClass).find('.folder').first();
-                firstFolder.find('.' + this.config.folderContentClass).show();
-                firstFolder.addClass(this.classes.active);
-            } else {
-                this.folder.addClass(this.classes.active).find('.' + this.config.folderContentClass).show();
-            }
+            var firstFolder = this.folders.first();
+            firstFolder.find('.' + this.config.folderContentClass).show();
+            firstFolder.addClass(this.classes.active);
+            this.changeAriaText(firstFolder.find('.' + this.config.ariaTextClass), this.config.ariaTextClose);
         },
 
-        // Close folder siblings
-        closeSiblings: function() {
-            var siblings = this.getSiblings().not(this.folder).find('.' + this.config.folderContentClass);
-
-            // With animation
-            if (this.config.animation !== 'none') {
-                siblings.slideUp(this.config.animationDuration);
-            }
-            // Without animation
-            else {
-                siblings.hide();
-            }
-
-            this.getSiblings().removeClass(this.classes.active);
-        },
-
-        // Function to change the hidden text inside the folderTrigger
-        changeAriaText: function(text) {
-            this.folderAria.text(text);
+        // Change aria text of a folder
+        changeAriaText: function(element, ariaText) {
+            element.text(ariaText);
         },
 
         // Change aria-live attribute on focus
@@ -183,23 +192,7 @@
         // Change aria-live attribute on blur
         onTriggerBlur: function(trigger) {
             trigger.find('.' + this.config.ariaTextClass).removeAttr('aria-live');
-        },
-
-        // Check if folder is inside a group of folders
-        isGroup: function() {
-            return this.folder.parent().hasClass('folder-group');
-        },
-
-        // Check if group folder has singleopen option set to true
-        isSingleOpen: function() {
-            return (typeof this.folder.parent().data('singleopen') !== 'undefined' || this.config.singleOpen);
-        },
-
-        // If folder is inside a group, get all siblings
-        getSiblings: function() {
-            return this.folder.siblings() || false;
         }
-
     });
 
     $.fn.folder = function(options) {

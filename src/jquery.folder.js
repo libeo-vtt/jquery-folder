@@ -33,7 +33,7 @@
             clicked: 'is-clicked',
             extern: 'is-external',
             error: 'is-error'
-        }, this.config.customGlobalClasses || {});
+        }, (window.classes !== undefined ? window.classes : this.config.customGlobalClasses) || {});
 
         // Get all the folders
         this.folders = this.folderGroup.find('.folder');

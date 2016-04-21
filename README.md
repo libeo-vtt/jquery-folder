@@ -1,5 +1,5 @@
-# VTT jQuery Folder Plugin
-A jQuery folder plugin.
+# jQuery Folder Plugin
+Accessible, responsive and configurable jQuery folder plugin
 
 ## Usage
 
@@ -19,7 +19,7 @@ A jQuery folder plugin.
 3. Call the plugin:
 
 	```javascript
-	$("#element").folder({
+	$('#element').folder({
 		// config
 	});
 	```

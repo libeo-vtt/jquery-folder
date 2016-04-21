@@ -3,10 +3,11 @@ A jQuery folder plugin.
 
 ## Usage
 
-1. Include jQuery:
+1. Include jQuery and dependencies:
 
 	```html
 	<script src="path/to/jquery.min.js"></script>
+	<script src="path/to/jquery.buttonize.min.js"></script>
 	```
 
 2. Include plugin's code:

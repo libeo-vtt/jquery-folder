@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "jquery": "^2.2.2",
-    "vtt-jquery-buttonize": "git@github.com:libeo-vtt/jquery-buttonize.git#~1.0.0"
+    "vtt-jquery-buttonize": "https://github.com/libeo-vtt/jquery-buttonize.git"
   },
   "keywords": "folder, plugin, jquery"
 }

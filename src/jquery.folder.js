@@ -50,6 +50,9 @@
             a11y: this.config.a11y
         });
 
+        // Get all the folders triggers and add type button so no submit is triggered
+        this.folderGroup.find('.' + this.classes.folderTrigger).attr('type', 'button');
+
         // Get all the folders triggers
         this.folderTriggers = this.folderGroup.find('.' + this.classes.folderTrigger);
 

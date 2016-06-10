@@ -12,7 +12,7 @@
     "node_modules"
   ],
   "dependencies": {
-    "jquery": "^2.2.2",
+    "jquery": "^3.0.0",
     "vtt-jquery-buttonize": "https://github.com/libeo-vtt/jquery-buttonize.git"
   },
   "keywords": "folder, accessible, plugin, jquery"

@@ -123,17 +123,18 @@
             currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
             currentFolder = currentTrigger.parent();
             currentContent = currentFolder.find('.' + this.classes.folderContent);
+            // Add class active to the folder and remove on others
+            this.folders.removeClass(this.classes.states.active)
+            currentFolder.addClass(this.classes.states.active);
 
             // With animation
             if (this.config.animation !== 'none') {
                 // If singleopen option set to true close every folders
                 if (this.config.singleOpen == true) {
                     this.folderContents.slideUp(this.config.animationDuration);
-                    this.folders.removeClass(this.classes.states.active);
                     this.changeAriaText(this.folderArias, this.labels.ariaOpen);
                 }
                 currentContent.slideDown(this.config.animationDuration, $.proxy(function() {
-                    currentFolder.addClass(this.classes.states.active);
                     // Custom config function call
                     this.config.afterOpen();
                 }, this));
@@ -143,11 +144,9 @@
                 // If singleopen option set to true close every folders
                 if (this.config.singleOpen == true) {
                     this.folderContents.hide();
-                    this.folders.removeClass(this.classes.states.active)
                     this.changeAriaText(this.folderArias, this.labels.ariaOpen);
                 }
                 currentContent.show();
-                currentFolder.addClass(this.classes.states.active);
                 // Custom config function call
                 this.config.afterOpen();
             }
@@ -162,11 +161,12 @@
             currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
             currentFolder = currentTrigger.parent();
             currentContent = currentFolder.find('.' + this.classes.folderContent);
+            // Remove class active
+            currentFolder.removeClass(this.classes.states.active);
 
             // With animation
             if (this.config.animation !== 'none') {
                 currentContent.slideUp(this.config.animationDuration, $.proxy(function() {
-                    currentFolder.removeClass(this.classes.states.active);
                     // Custom config function call
                     this.config.afterClose();
                 }, this));
@@ -174,7 +174,6 @@
             // Without animation
             else {
                 currentContent.hide();
-                currentFolder.removeClass(this.classes.states.active);
                 // Custom config function call
                 this.config.afterClose();
             }

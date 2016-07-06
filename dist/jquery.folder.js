@@ -24,6 +24,7 @@
             classes: {
                 ariaText: 'aria-text',
                 forceOpen: 'is-default-open',
+                folder: 'folder',
                 folderGroup: 'folder-group',
                 folderTrigger: 'folder-trigger',
                 folderContent: 'folder-content',
@@ -43,7 +44,7 @@
         this.config = $.extend(true, this.defaults, options || {});
 
         // Get all the folders
-        this.folders = this.folderGroup.find('.folder');
+        this.folders = this.folderGroup.find('.' + this.classes.folder);
 
         // Get all the folders triggers and transform them into <button> tag
         this.folderGroup.find('.' + this.classes.folderTrigger).buttonize({
@@ -96,7 +97,7 @@
             // Folder trigger click event (open or close)
             this.folderTriggers.on('click', $.proxy(function(e) {
                 // If folder is opened or not
-                if ($(e.currentTarget).parents('').hasClass(this.classes.states.active)) {
+                if ($(e.currentTarget).closest('.' + this.classes.folder).hasClass(this.classes.states.active)) {
                     this.closeFolder($(e.currentTarget));
                 } else {
                     this.openFolder($(e.currentTarget));
@@ -121,7 +122,7 @@
             this.config.beforeOpen();
             // Find elements of current tab
             currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
-            currentFolder = currentTrigger.parent();
+            currentFolder = currentTrigger.closest('.' + this.classes.folder);
             currentContent = currentFolder.find('.' + this.classes.folderContent);
             // Add class active to the folder and remove on others
             this.folders.removeClass(this.classes.states.active)
@@ -159,7 +160,7 @@
             this.config.beforeClose();
             // Find elements of current tab
             currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
-            currentFolder = currentTrigger.parent();
+            currentFolder = currentTrigger.closest('.' + this.classes.folder);
             currentContent = currentFolder.find('.' + this.classes.folderContent);
             // Remove class active
             currentFolder.removeClass(this.classes.states.active);

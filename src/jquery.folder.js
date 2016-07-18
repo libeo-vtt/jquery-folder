@@ -189,6 +189,24 @@
             this.changeAriaText(firstFolder.find('.' + this.classes.ariaText), this.labels.ariaClose);
         },
 
+        // closeAllFolder
+        closeAll: function() {
+            var element = this;
+            for (var i = 0; i < this.folders.length; i++) {
+                var $this = $(this.folders[i]);
+
+                // Find elements of current tab
+                currentTrigger = $this.find('.' + this.classes.folderTrigger);
+                currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
+                currentFolder = currentTrigger.closest('.' + this.classes.folder);
+                currentContent = currentFolder.find('.' + this.classes.folderContent);
+                // Remove class active
+                currentFolder.removeClass(this.classes.states.active);
+                currentContent.hide();
+                element.changeAriaText(currentAriaContainer, this.labels.ariaOpen);
+            }
+        },
+
         // Change aria text of a folder
         changeAriaText: function(element, ariaText) {
             element.text(ariaText);

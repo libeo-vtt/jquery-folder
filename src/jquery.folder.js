@@ -61,7 +61,7 @@
         this.folderContents = this.folderGroup.find('.' + this.classes.folderContent);
 
         // Create and get the aria text for all folders triggers
-        this.folderTriggers.append('<span class="' + this.classes.ariaText + ' visuallyhidden"></span>');
+        this.folderTriggers.append('<span aria-live="polite" class="' + this.classes.ariaText + ' visuallyhidden">' + this.labels.ariaOpen + '</span>');
         this.folderArias = this.folderTriggers.find('.' + this.classes.ariaText);
 
         this.init();

@@ -61,7 +61,7 @@
         this.folderContents = this.folderGroup.find('.' + this.classes.folderContent);
 
         // Create and get the aria text for all folders triggers
-        this.folderTriggers.append('<span class="' + this.classes.ariaText + ' visuallyhidden"></span>');
+        this.folderTriggers.append('<span aria-live="polite" class="' + this.classes.ariaText + ' visuallyhidden">' + this.labels.ariaOpen + '</span>');
         this.folderArias = this.folderTriggers.find('.' + this.classes.ariaText);
 
         this.init();
@@ -187,6 +187,24 @@
             firstFolder.find('.' + this.classes.folderContent).show();
             firstFolder.addClass(this.classes.states.active);
             this.changeAriaText(firstFolder.find('.' + this.classes.ariaText), this.labels.ariaClose);
+        },
+
+        // closeAllFolder
+        closeAll: function() {
+            var element = this;
+            for (var i = 0; i < this.folders.length; i++) {
+                var $this = $(this.folders[i]);
+
+                // Find elements of current tab
+                currentTrigger = $this.find('.' + this.classes.folderTrigger);
+                currentAriaContainer = currentTrigger.find('.' + this.classes.ariaText);
+                currentFolder = currentTrigger.closest('.' + this.classes.folder);
+                currentContent = currentFolder.find('.' + this.classes.folderContent);
+                // Remove class active
+                currentFolder.removeClass(this.classes.states.active);
+                currentContent.hide();
+                element.changeAriaText(currentAriaContainer, this.labels.ariaOpen);
+            }
         },
 
         // Change aria text of a folder

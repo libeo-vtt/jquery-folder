@@ -125,7 +125,9 @@
             currentFolder = currentTrigger.closest('.' + this.classes.folder);
             currentContent = currentFolder.find('.' + this.classes.folderContent);
             // Add class active to the folder and remove on others
-            this.folders.removeClass(this.classes.states.active)
+            if (this.config.singleOpen == true) {
+                this.folders.removeClass(this.classes.states.active)
+            }
             currentFolder.addClass(this.classes.states.active);
 
             // With animation

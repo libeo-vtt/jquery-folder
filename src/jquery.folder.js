@@ -60,6 +60,9 @@
         // Get all the folders contents
         this.folderContents = this.folderGroup.find('.' + this.classes.folderContent);
 
+        // Check for aria and labels on the HTML element - overwrite JS config
+        this.updatePluginText();
+
         // Create and get the aria text for all folders triggers
         this.folderTriggers.append('<span aria-live="polite" class="' + this.classes.ariaText + ' visuallyhidden">' + this.labels.ariaOpen + '</span>');
         this.folderArias = this.folderTriggers.find('.' + this.classes.ariaText);
@@ -114,6 +117,22 @@
             // On blur and focuse custom config function call
             this.folderTriggers.on('focus', this.config.onFocus);
             this.folderTriggers.on('blur', this.config.onBlur);
+        },
+
+        updatePluginText: function() {
+            // Loop through labels in config
+            $.each(this.config.labels, $.proxy(function(labelKey, labelText) {
+                // Loop through labels in element data attributes to see if it's set
+                $.each(this.folderGroup.data(), $.proxy(function(dataLabelKey, dataLabelText) {
+                    var dataLabelKeyCamelCased = dataLabelKey.replace(/-([a-z])/g, function(g) {
+                        return g[1].toUpperCase();
+                    });
+                    // We have a match!
+                    if (dataLabelKeyCamelCased === labelKey) {
+                        this.config.labels[dataLabelKeyCamelCased] = dataLabelText;
+                    }
+                }, this));
+            }, this));
         },
 
         // Open the current folder
